@@ -135,13 +135,20 @@ function renderAircraft() {
         pointerId: e.pointerId
       };
 
+      document.body.classList.add("dragging-aircraft");
       button.classList.add("dragging");
-      button.setPointerCapture(e.pointerId);
+
+      try {
+        button.setPointerCapture(e.pointerId);
+      } catch (_) {}
+
       updateLivePanel();
     });
 
     button.addEventListener("pointermove", (e) => {
       if (!dragState || dragState.stand !== plane.stand) return;
+
+      e.preventDefault();
 
       const rect = board.getBoundingClientRect();
       const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -160,6 +167,7 @@ function renderAircraft() {
       if (!dragState || dragState.stand !== plane.stand) return;
       dragState = null;
       button.classList.remove("dragging");
+      document.body.classList.remove("dragging-aircraft");
       try {
         button.releasePointerCapture(e.pointerId);
       } catch (_) {}
@@ -170,6 +178,7 @@ function renderAircraft() {
       if (!dragState || dragState.stand !== plane.stand) return;
       dragState = null;
       button.classList.remove("dragging");
+      document.body.classList.remove("dragging-aircraft");
       try {
         button.releasePointerCapture(e.pointerId);
       } catch (_) {}
@@ -258,6 +267,16 @@ importFile.addEventListener("change", async (e) => {
 board.addEventListener("click", () => {
   selectedStand = null;
   renderAircraft();
+});
+
+window.addEventListener("pointerup", () => {
+  dragState = null;
+  document.body.classList.remove("dragging-aircraft");
+});
+
+window.addEventListener("pointercancel", () => {
+  dragState = null;
+  document.body.classList.remove("dragging-aircraft");
 });
 
 renderAircraft();
