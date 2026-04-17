@@ -1,0 +1,123 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #111827;
+  color: #e5e7eb;
+}
+
+.app {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  margin: 0 0 6px;
+  font-size: 28px;
+}
+
+.app-header p {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+.board-wrap {
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background: #0b1220;
+  padding: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.apron-board {
+  position: relative;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.apron-map {
+  display: block;
+  width: 100%;
+  height: auto;
+  user-select: none;
+  border-radius: 10px;
+}
+
+.aircraft-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.aircraft {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: clamp(34px, 2.7vw, 56px);
+  aspect-ratio: 1 / 1;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.aircraft svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  fill: rgba(0, 0, 0, 0.88);
+  filter: drop-shadow(0 0 0 rgba(59, 130, 246, 0));
+  transition: fill 0.18s ease, filter 0.18s ease;
+}
+
+.aircraft:hover,
+.aircraft:focus-visible {
+  transform: translate(-50%, -50%) scale(1.08);
+  outline: none;
+}
+
+.aircraft:hover svg,
+.aircraft:focus-visible svg {
+  fill: #111827;
+  filter:
+    drop-shadow(0 0 6px rgba(96, 165, 250, 0.95))
+    drop-shadow(0 0 14px rgba(96, 165, 250, 0.65))
+    drop-shadow(0 0 22px rgba(147, 197, 253, 0.42));
+}
+
+.aircraft.selected svg {
+  fill: #0f172a;
+  filter:
+    drop-shadow(0 0 7px rgba(34, 197, 94, 0.98))
+    drop-shadow(0 0 15px rgba(34, 197, 94, 0.72))
+    drop-shadow(0 0 26px rgba(34, 197, 94, 0.5));
+}
+
+.legend {
+  margin-top: 18px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.legend h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.selected-aircraft {
+  color: #cbd5e1;
+}
