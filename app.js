@@ -2,6 +2,11 @@ const board = document.getElementById("apron-board");
 const aircraftLayer = document.getElementById("aircraft-layer");
 const selectedAircraft = document.getElementById("selected-aircraft");
 const liveData = document.getElementById("live-data");
+
+const rotateLeftBtn = document.getElementById("rotate-left-btn");
+const rotateRightBtn = document.getElementById("rotate-right-btn");
+const sizeDownBtn = document.getElementById("size-down-btn");
+const sizeUpBtn = document.getElementById("size-up-btn");
 const exportBtn = document.getElementById("export-btn");
 const resetBtn = document.getElementById("reset-btn");
 const importFile = document.getElementById("import-file");
@@ -125,7 +130,6 @@ function renderAircraft() {
       e.stopPropagation();
 
       selectedStand = plane.stand;
-
       dragState = {
         stand: plane.stand,
         pointerId: e.pointerId
@@ -133,8 +137,6 @@ function renderAircraft() {
 
       button.classList.add("dragging");
       button.setPointerCapture(e.pointerId);
-
-      renderAircraft();
       updateLivePanel();
     });
 
@@ -158,8 +160,10 @@ function renderAircraft() {
       if (!dragState || dragState.stand !== plane.stand) return;
       dragState = null;
       button.classList.remove("dragging");
-      button.releasePointerCapture(e.pointerId);
-      updateLivePanel();
+      try {
+        button.releasePointerCapture(e.pointerId);
+      } catch (_) {}
+      renderAircraft();
     });
 
     button.addEventListener("pointercancel", (e) => {
@@ -169,33 +173,27 @@ function renderAircraft() {
       try {
         button.releasePointerCapture(e.pointerId);
       } catch (_) {}
-      updateLivePanel();
-    });
-
-    button.addEventListener("wheel", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-
-      selectedStand = plane.stand;
-
-      if (e.shiftKey) {
-        plane.size += e.deltaY < 0 ? 0.15 : -0.15;
-        plane.size = clamp(plane.size, 2.0, 8.0);
-      } else {
-        plane.rotation += e.deltaY < 0 ? 2 : -2;
-
-        if (plane.rotation >= 360) plane.rotation -= 360;
-        if (plane.rotation < 0) plane.rotation += 360;
-      }
-
       renderAircraft();
-      updateLivePanel();
     });
 
     aircraftLayer.appendChild(button);
   });
 
   updateLivePanel();
+}
+
+function changeRotation(delta) {
+  if (!selectedStand) return;
+  const aircraft = getAircraftByStand(selectedStand);
+  aircraft.rotation = (aircraft.rotation + delta + 360) % 360;
+  renderAircraft();
+}
+
+function changeSize(delta) {
+  if (!selectedStand) return;
+  const aircraft = getAircraftByStand(selectedStand);
+  aircraft.size = clamp(aircraft.size + delta, 2.0, 8.0);
+  renderAircraft();
 }
 
 function downloadJson(filename, data) {
@@ -212,6 +210,11 @@ function downloadJson(filename, data) {
   a.remove();
   URL.revokeObjectURL(url);
 }
+
+rotateLeftBtn.addEventListener("click", () => changeRotation(-2));
+rotateRightBtn.addEventListener("click", () => changeRotation(2));
+sizeDownBtn.addEventListener("click", () => changeSize(-0.15));
+sizeUpBtn.addEventListener("click", () => changeSize(0.15));
 
 exportBtn.addEventListener("click", () => {
   downloadJson("aircraft-layout.json", aircraftData);
