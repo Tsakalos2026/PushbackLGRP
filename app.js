@@ -1,3 +1,17 @@
+const board = document.getElementById("apron-board");
+let placementMode = true; // turn ON/OFF positioning mode
+
+board.addEventListener("click", (e) => {
+  if (!placementMode) return;
+
+  const rect = board.getBoundingClientRect();
+
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+  console.log(`x: ${x.toFixed(2)}, y: ${y.toFixed(2)}`);
+});
+
 const aircraftLayer = document.getElementById("aircraft-layer");
 const selectedAircraft = document.getElementById("selected-aircraft");
 
