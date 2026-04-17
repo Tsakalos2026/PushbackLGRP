@@ -3,18 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rhodes Apron Pushback Prototype</title>
+  <title>Rhodes Apron Pushback Layout Editor</title>
   <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="app-header">
       <div>
-        <h1>Rhodes Apron Pushback Prototype</h1>
-        <p>Drag aircraft to position them. Mouse wheel rotates. Shift + wheel resizes.</p>
+        <h1>Rhodes Apron Pushback Layout Editor</h1>
+        <p>Drag aircraft to position them. Use the rotate buttons to change heading. Export the layout as JSON.</p>
       </div>
 
       <div class="toolbar">
+        <button id="rotate-left-btn" type="button">Rotate Left</button>
+        <button id="rotate-right-btn" type="button">Rotate Right</button>
+        <button id="size-down-btn" type="button">Smaller</button>
+        <button id="size-up-btn" type="button">Larger</button>
         <button id="export-btn" type="button">Export JSON</button>
         <button id="reset-btn" type="button">Reset</button>
         <label class="import-label" for="import-file">Import JSON</label>
