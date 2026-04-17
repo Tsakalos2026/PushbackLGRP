@@ -1,57 +1,69 @@
 const aircraftLayer = document.getElementById("aircraft-layer");
 const selectedAircraft = document.getElementById("selected-aircraft");
 
-const topRow = [
-  { stand: "G1", x: 41.5, y: 31.0, rotation: 18 },
-  { stand: "16", x: 51.5, y: 31.0, rotation: 18 },
-  { stand: "15", x: 58.5, y: 31.0, rotation: 18 },
-  { stand: "14", x: 65.0, y: 31.0, rotation: 18 },
-  { stand: "13", x: 71.5, y: 31.0, rotation: 18 }
-];
+const aircraftData = [
+  // upper row
+  { stand: "G1",  x: 42.0, y: 30.2, rotation: 18, size: 3.8 },
+  { stand: "16",  x: 47.7, y: 34.2, rotation: 18, size: 4.2 },
+  { stand: "15",  x: 54.5, y: 33.6, rotation: 18, size: 4.2 },
+  { stand: "14",  x: 60.2, y: 33.4, rotation: 18, size: 4.2 },
+  { stand: "13",  x: 66.2, y: 33.0, rotation: 18, size: 4.2 },
+  { stand: "6",   x: 72.3, y: 32.8, rotation: 18, size: 4.2 },
 
-const bottomRow = [
-  { stand: "1A", x: 19.0, y: 69.0, rotation: 180 },
-  { stand: "1B", x: 24.3, y: 69.0, rotation: 180 },
-  { stand: "2", x: 29.3, y: 69.0, rotation: 180 },
-  { stand: "2A", x: 34.1, y: 69.0, rotation: 180 },
-  { stand: "2B", x: 39.2, y: 69.0, rotation: 180 },
-  { stand: "4", x: 46.0, y: 70.2, rotation: 180 },
-  { stand: "5", x: 51.0, y: 70.2, rotation: 180 },
-  { stand: "6", x: 56.0, y: 70.2, rotation: 180 },
-  { stand: "7", x: 61.0, y: 70.2, rotation: 180 },
-  { stand: "8", x: 68.0, y: 70.2, rotation: 180 },
-  { stand: "9", x: 73.0, y: 70.2, rotation: 180 },
-  { stand: "10", x: 78.0, y: 70.2, rotation: 180 },
-  { stand: "11", x: 83.0, y: 70.2, rotation: 180 },
-  { stand: "12A", x: 88.5, y: 70.2, rotation: 180 }
+  // lower row
+  { stand: "1A",  x: 19.1, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "1B",  x: 24.4, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2",   x: 29.5, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2A",  x: 34.3, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2B",  x: 39.2, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "4",   x: 45.6, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "5",   x: 51.2, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "6B",  x: 56.1, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "7",   x: 61.2, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "8",   x: 68.1, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "9",   x: 73.0, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "10",  x: 77.9, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "11",  x: 83.0, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "12A", x: 88.4, y: 74.0, rotation: 180, size: 4.9 }
 ];
-
-const aircraftData = [...topRow, ...bottomRow];
 
 function aircraftSvg(rotation) {
   return `
-    <svg viewBox="0 0 100 100" style="transform: rotate(${rotation}deg)">
-      <path d="M54 6
-               L46 6
-               L43 32
-               L19 42
-               L19 49
-               L42 46
-               L42 59
-               L27 66
-               L27 72
-               L42 69
-               L46 95
-               L54 95
-               L58 69
-               L73 72
-               L73 66
-               L58 59
-               L58 46
-               L81 49
-               L81 42
-               L57 32
-               Z"></path>
+    <svg viewBox="0 0 100 100" aria-hidden="true" style="transform: rotate(${rotation}deg)">
+      <path d="
+        M50 4
+        C54 4, 57 8, 57 14
+        L57 32
+        L82 49
+        C85 51, 86 56, 85 62
+        L66 55
+        L66 64
+        L72 67
+        L72 75
+        L66 75
+        L63 70
+        L58 68
+        L58 86
+        L66 92
+        L66 100
+        L50 95
+        L34 100
+        L34 92
+        L42 86
+        L42 68
+        L37 70
+        L34 75
+        L28 75
+        L28 67
+        L34 64
+        L34 55
+        L15 62
+        C14 56, 15 51, 18 49
+        L43 32
+        L43 14
+        C43 8, 46 4, 50 4
+        Z
+      "></path>
     </svg>
   `;
 }
@@ -62,9 +74,12 @@ function renderAircraft() {
   aircraftData.forEach((plane) => {
     const button = document.createElement("button");
     button.className = "aircraft";
+    button.type = "button";
+    button.setAttribute("aria-label", `Aircraft at stand ${plane.stand}`);
+    button.dataset.stand = plane.stand;
     button.style.left = `${plane.x}%`;
     button.style.top = `${plane.y}%`;
-    button.dataset.stand = plane.stand;
+    button.style.width = `${plane.size}%`;
     button.innerHTML = aircraftSvg(plane.rotation);
 
     button.addEventListener("click", () => {
