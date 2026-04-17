@@ -1,11 +1,13 @@
 const board = document.getElementById("apron-board");
-let placementMode = true; // turn ON/OFF positioning mode
+const aircraftLayer = document.getElementById("aircraft-layer");
+const selectedAircraft = document.getElementById("selected-aircraft");
+
+let placementMode = true;
 
 board.addEventListener("click", (e) => {
   if (!placementMode) return;
 
   const rect = board.getBoundingClientRect();
-
   const x = ((e.clientX - rect.left) / rect.width) * 100;
   const y = ((e.clientY - rect.top) / rect.height) * 100;
 
@@ -16,35 +18,30 @@ board.addEventListener("click", (e) => {
   dot.style.left = `${x}%`;
   dot.style.top = `${y}%`;
 
-  document.getElementById("aircraft-layer").appendChild(dot);
+  aircraftLayer.appendChild(dot);
 });
 
-const aircraftLayer = document.getElementById("aircraft-layer");
-const selectedAircraft = document.getElementById("selected-aircraft");
-
 const aircraftData = [
-  // upper row
-  { stand: "G1",  x: 42.0, y: 30.2, rotation: 18, size: 3.8 },
-  { stand: "16",  x: 47.7, y: 34.2, rotation: 18, size: 4.2 },
-  { stand: "15",  x: 54.5, y: 33.6, rotation: 18, size: 4.2 },
-  { stand: "14",  x: 60.2, y: 33.4, rotation: 18, size: 4.2 },
-  { stand: "13",  x: 66.2, y: 33.0, rotation: 18, size: 4.2 },
-  { stand: "6",   x: 72.3, y: 32.8, rotation: 18, size: 4.2 },
+  { stand: "G1", x: 42.0, y: 30.2, rotation: 18, size: 3.8 },
+  { stand: "16", x: 47.7, y: 34.2, rotation: 18, size: 4.2 },
+  { stand: "15", x: 54.5, y: 33.6, rotation: 18, size: 4.2 },
+  { stand: "14", x: 60.2, y: 33.4, rotation: 18, size: 4.2 },
+  { stand: "13", x: 66.2, y: 33.0, rotation: 18, size: 4.2 },
+  { stand: "6", x: 72.3, y: 32.8, rotation: 18, size: 4.2 },
 
-  // lower row
-  { stand: "1A",  x: 19.1, y: 73.0, rotation: 180, size: 4.9 },
-  { stand: "1B",  x: 24.4, y: 73.0, rotation: 180, size: 4.9 },
-  { stand: "2",   x: 29.5, y: 73.0, rotation: 180, size: 4.9 },
-  { stand: "2A",  x: 34.3, y: 73.0, rotation: 180, size: 4.9 },
-  { stand: "2B",  x: 39.2, y: 73.0, rotation: 180, size: 4.9 },
-  { stand: "4",   x: 45.6, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "5",   x: 51.2, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "6B",  x: 56.1, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "7",   x: 61.2, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "8",   x: 68.1, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "9",   x: 73.0, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "10",  x: 77.9, y: 74.0, rotation: 180, size: 4.9 },
-  { stand: "11",  x: 83.0, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "1A", x: 19.1, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "1B", x: 24.4, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2", x: 29.5, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2A", x: 34.3, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "2B", x: 39.2, y: 73.0, rotation: 180, size: 4.9 },
+  { stand: "4", x: 45.6, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "5", x: 51.2, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "6B", x: 56.1, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "7", x: 61.2, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "8", x: 68.1, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "9", x: 73.0, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "10", x: 77.9, y: 74.0, rotation: 180, size: 4.9 },
+  { stand: "11", x: 83.0, y: 74.0, rotation: 180, size: 4.9 },
   { stand: "12A", x: 88.4, y: 74.0, rotation: 180, size: 4.9 }
 ];
 
@@ -90,7 +87,7 @@ function aircraftSvg(rotation) {
 }
 
 function renderAircraft() {
-  aircraftLayer.innerHTML = "";
+  aircraftLayer.querySelectorAll(".aircraft").forEach((node) => node.remove());
 
   aircraftData.forEach((plane) => {
     const button = document.createElement("button");
@@ -103,7 +100,9 @@ function renderAircraft() {
     button.style.width = `${plane.size}%`;
     button.innerHTML = aircraftSvg(plane.rotation);
 
-    button.addEventListener("click", () => {
+    button.addEventListener("click", (e) => {
+      e.stopPropagation();
+
       document
         .querySelectorAll(".aircraft.selected")
         .forEach((node) => node.classList.remove("selected"));
