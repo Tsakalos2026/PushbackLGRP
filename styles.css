@@ -16,6 +16,11 @@ body {
 
 .app-header {
   margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .app-header h1 {
@@ -26,6 +31,33 @@ body {
 .app-header p {
   margin: 0;
   color: #cbd5e1;
+}
+
+.toolbar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.toolbar button,
+.import-label {
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #0f172a;
+  color: #e5e7eb;
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.toolbar button:hover,
+.import-label:hover {
+  background: #162235;
+}
+
+#import-file {
+  display: none;
 }
 
 .board-wrap {
@@ -41,6 +73,7 @@ body {
   width: 100%;
   max-width: 1750px;
   margin: 0 auto;
+  user-select: none;
 }
 
 .apron-map {
@@ -49,6 +82,7 @@ body {
   height: auto;
   border-radius: 12px;
   background: white;
+  pointer-events: none;
 }
 
 .aircraft-layer {
@@ -62,24 +96,22 @@ body {
   border: none;
   background: transparent;
   padding: 0;
-  cursor: pointer;
-  width: 4.2%;
+  cursor: grab;
   aspect-ratio: 1 / 1;
-  transition: transform 0.18s ease;
+  transition: transform 0.12s ease;
+}
+
+.aircraft.dragging {
+  cursor: grabbing;
 }
 
 .aircraft svg {
   width: 100%;
   height: 100%;
   display: block;
-  fill: rgba(0, 0, 0, 0.88);
-  transition: fill 0.18s ease, filter 0.18s ease;
-}
-
-.aircraft:hover,
-.aircraft:focus-visible {
-  transform: translate(-50%, -50%) scale(1.08);
-  outline: none;
+  fill: rgba(0, 0, 0, 0.9);
+  transition: fill 0.15s ease, filter 0.15s ease;
+  pointer-events: none;
 }
 
 .aircraft:hover svg,
@@ -114,14 +146,17 @@ body {
 
 .selected-aircraft {
   color: #cbd5e1;
+  margin-bottom: 12px;
 }
 
-.crosshair {
-  position: absolute;
-  width: 10px;
-  height: 10px;
-  background: red;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
+.live-data {
+  margin: 0;
+  padding: 12px;
+  background: #020817;
+  border-radius: 10px;
+  color: #93c5fd;
+  overflow: auto;
+  max-height: 240px;
+  font-size: 13px;
+  line-height: 1.4;
 }
