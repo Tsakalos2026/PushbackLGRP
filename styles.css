@@ -101,6 +101,48 @@ body {
   aspect-ratio: 1 / 1;
 }
 
+.board-wrap {
+  overflow: auto;
+  background: #07101d;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 12px;
+
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior: contain;
+}
+
+.apron-board {
+  position: relative;
+  width: 100%;
+  max-width: 1750px;
+  margin: 0 auto;
+  user-select: none;
+  touch-action: none;
+}
+
+.aircraft-layer {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+
+.aircraft {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: grab;
+  aspect-ratio: 1 / 1;
+  touch-action: none;
+}
+
+body.dragging-aircraft {
+  overflow: hidden;
+  touch-action: none;
+}
+
 .aircraft.dragging {
   cursor: grabbing;
 }
