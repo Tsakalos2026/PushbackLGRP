@@ -10,6 +10,13 @@ board.addEventListener("click", (e) => {
   const y = ((e.clientY - rect.top) / rect.height) * 100;
 
   console.log(`x: ${x.toFixed(2)}, y: ${y.toFixed(2)}`);
+
+  const dot = document.createElement("div");
+  dot.className = "crosshair";
+  dot.style.left = `${x}%`;
+  dot.style.top = `${y}%`;
+
+  document.getElementById("aircraft-layer").appendChild(dot);
 });
 
 const aircraftLayer = document.getElementById("aircraft-layer");
