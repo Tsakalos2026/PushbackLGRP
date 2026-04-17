@@ -9,8 +9,17 @@
 <body>
   <div class="app">
     <header class="app-header">
-      <h1>Rhodes Apron Pushback Prototype</h1>
-      <p>Clickable aircraft on the apron map. No pushback logic assigned yet.</p>
+      <div>
+        <h1>Rhodes Apron Pushback Prototype</h1>
+        <p>Drag aircraft to position them. Mouse wheel rotates. Shift + wheel resizes.</p>
+      </div>
+
+      <div class="toolbar">
+        <button id="export-btn" type="button">Export JSON</button>
+        <button id="reset-btn" type="button">Reset</button>
+        <label class="import-label" for="import-file">Import JSON</label>
+        <input id="import-file" type="file" accept=".json" />
+      </div>
     </header>
 
     <main class="board-wrap">
@@ -27,10 +36,9 @@
     </main>
 
     <section class="legend">
-      <h2>Current stand occupancy</h2>
-      <div id="selected-aircraft" class="selected-aircraft">
-        Click an aircraft to highlight it.
-      </div>
+      <h2>Selected aircraft</h2>
+      <div id="selected-aircraft" class="selected-aircraft">None selected.</div>
+      <pre id="live-data" class="live-data"></pre>
     </section>
   </div>
 
