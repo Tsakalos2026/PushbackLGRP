@@ -3,37 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rhodes Apron Pushback App Prototype</title>
+  <title>Rhodes Apron Pushback Prototype</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <div class="app">
     <header class="app-header">
-      <div>
-        <h1>Rhodes Apron Pushback Prototype</h1>
-        <p>Clickable aircraft overlays on the apron map. No pushback logic assigned yet.</p>
-      </div>
+      <h1>Rhodes Apron Pushback Prototype</h1>
+      <p>Clickable aircraft on the apron map. No pushback logic assigned yet.</p>
     </header>
 
     <main class="board-wrap">
-      <div id="apron-board" class="apron-board" aria-label="Airport apron map">
+      <div id="apron-board" class="apron-board">
         <img
           id="apron-map"
           class="apron-map"
-          src="pushback.png"
+          src="./apron-map.png"
           alt="Rhodes apron map"
           draggable="false"
         />
-        <div id="aircraft-layer" class="aircraft-layer" aria-hidden="false"></div>
+        <div id="aircraft-layer" class="aircraft-layer"></div>
       </div>
     </main>
 
     <section class="legend">
       <h2>Current stand occupancy</h2>
-      <div id="selected-aircraft" class="selected-aircraft">Click an aircraft to highlight it.</div>
+      <div id="selected-aircraft" class="selected-aircraft">
+        Click an aircraft to highlight it.
+      </div>
     </section>
   </div>
 
-  <script src="app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>
