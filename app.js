@@ -20,59 +20,13 @@ let selectedStand = null;
 let dragState = null;
 let appMode = "editor";
 
-const illegalPushbacks = {
-  "18": ["2B", "3", "4"],
-  "17": ["3", "4", "5", "18"],
-  "16": ["4", "5", "6", "17", "18"],
-  "15": ["5", "6", "7", "16", "17"],
-  "14": ["6", "7", "8", "9", "15", "16"],
-  "13": ["8", "9", "10", "14", "15"],
-
-  // Inferred fix from corrupted Excel date cell
-  "12": ["10", "11", "13"],
-
-  "11": ["9", "10", "13", "14"],
-  "10": ["8", "9", "13", "14"],
-  "9": ["7", "8", "14", "15"],
-  "8": ["6", "7", "15", "16"],
-  "7": ["5", "6", "16", "17"],
-  "6": ["4", "5", "17", "18"],
-
-  // Inferred fix from corrupted Excel date cell
-  "5": ["3", "4", "18"]
-
-  "4": ["2B", "3", "18"],
-  "3": ["2A", "2B"],
-  "2B": ["1B", "2A"],
-  "2A": ["1A", "2B"],
-  "1B": ["1A"],
-  "1A": []
-};
-
-function aircraftSvg(rotation, state = "normal") {
-  const filterMap = {
-    normal: "",
-    selected:
-      "brightness(0.7) drop-shadow(0 0 7px rgba(34, 197, 94, 1)) drop-shadow(0 0 16px rgba(34, 197, 94, 0.8)) drop-shadow(0 0 28px rgba(34, 197, 94, 0.45))",
-    illegal:
-      "brightness(0) saturate(100%) invert(16%) sepia(94%) saturate(7485%) hue-rotate(357deg) brightness(97%) contrast(119%) drop-shadow(0 0 6px rgba(239, 68, 68, 0.95)) drop-shadow(0 0 14px rgba(239, 68, 68, 0.65))",
-    hover:
-      "brightness(0.8) drop-shadow(0 0 7px rgba(74, 222, 128, 0.95)) drop-shadow(0 0 16px rgba(74, 222, 128, 0.65)) drop-shadow(0 0 28px rgba(74, 222, 128, 0.35))"
-  };
-
+function aircraftSvg(rotation) {
   return `
     <img
       src="./plane.svg"
       alt=""
       draggable="false"
-      style="
-        width:100%;
-        height:100%;
-        transform: rotate(${rotation}deg);
-        pointer-events:none;
-        user-select:none;
-        filter:${filterMap[state]};
-      "
+      style="width:100%; height:100%; transform: rotate(${rotation}deg); pointer-events:none; user-select:none;"
     />
   `;
 }
@@ -89,28 +43,6 @@ function isEditorMode() {
   return appMode === "editor";
 }
 
-function getIllegalSetForSelection() {
-  if (isEditorMode()) return new Set();
-  if (!selectedStand) return new Set();
-
-  const illegal = illegalPushbacks[selectedStand] || [];
-  return new Set(illegal.map(String));
-}
-
-function getPlaneVisualState(stand) {
-  const illegalSet = getIllegalSetForSelection();
-
-  if (selectedStand === stand) {
-    return "selected";
-  }
-
-  if (illegalSet.has(String(stand))) {
-    return "illegal";
-  }
-
-  return "normal";
-}
-
 function updateModeUI() {
   const editorEnabled = isEditorMode();
 
@@ -120,7 +52,7 @@ function updateModeUI() {
 
   modeDescription.textContent = editorEnabled
     ? "Editor Mode: drag aircraft, rotate, resize, import, export, and reset."
-    : "Use Mode: click an aircraft to highlight illegal pushbacks in red.";
+    : "Use Mode: aircraft are selectable but locked in place.";
 
   document.body.classList.toggle("use-mode", !editorEnabled);
 
@@ -138,14 +70,8 @@ function updateModeUI() {
 function updateLivePanel() {
   if (selectedStand) {
     const aircraft = getAircraftByStand(selectedStand);
-    const illegalList = isEditorMode()
-      ? []
-      : (illegalPushbacks[selectedStand] || []);
-
     selectedAircraft.textContent =
-      `[${appMode.toUpperCase()}] Stand ${aircraft.stand} | x=${aircraft.x.toFixed(2)} | y=${aircraft.y.toFixed(2)} | rotation=${aircraft.rotation.toFixed(1)} | size=${aircraft.size.toFixed(2)}${
-        illegalList.length ? ` | Illegal pushbacks: ${illegalList.join(", ")}` : ""
-      }`;
+      `[${appMode.toUpperCase()}] Stand ${aircraft.stand} | x=${aircraft.x.toFixed(2)} | y=${aircraft.y.toFixed(2)} | rotation=${aircraft.rotation.toFixed(1)} | size=${aircraft.size.toFixed(2)}`;
   } else {
     selectedAircraft.textContent = `[${appMode.toUpperCase()}] None selected.`;
   }
@@ -165,7 +91,7 @@ function renderAircraft() {
     button.style.left = `${plane.x}%`;
     button.style.top = `${plane.y}%`;
     button.style.width = `${plane.size}%`;
-    button.innerHTML = aircraftSvg(plane.rotation, getPlaneVisualState(plane.stand));
+    button.innerHTML = aircraftSvg(plane.rotation);
 
     if (plane.stand === selectedStand) {
       button.classList.add("selected");
