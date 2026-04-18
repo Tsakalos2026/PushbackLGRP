@@ -3,6 +3,7 @@ const aircraftLayer = document.getElementById("aircraft-layer");
 const selectedAircraft = document.getElementById("selected-aircraft");
 const liveData = document.getElementById("live-data");
 
+const modeToggleBtn = document.getElementById("mode-toggle-btn");
 const rotateLeftBtn = document.getElementById("rotate-left-btn");
 const rotateRightBtn = document.getElementById("rotate-right-btn");
 const sizeDownBtn = document.getElementById("size-down-btn");
@@ -38,6 +39,7 @@ const initialAircraftData = [
 let aircraftData = JSON.parse(JSON.stringify(initialAircraftData));
 let selectedStand = null;
 let dragState = null;
+let appMode = "editor";
 
 function aircraftSvg(rotation) {
   return `
@@ -58,13 +60,45 @@ function getAircraftByStand(stand) {
   return aircraftData.find((item) => item.stand === stand);
 }
 
+function isEditorMode() {
+  return appMode === "editor";
+}
+
+function updateModeUI() {
+  const editorControls = [
+    rotateLeftBtn,
+    rotateRightBtn,
+    sizeDownBtn,
+    sizeUpBtn,
+    exportBtn,
+    resetBtn,
+    importFile
+  ];
+
+  if (isEditorMode()) {
+    modeToggleBtn.textContent = "Switch to Use Mode";
+    document.body.classList.remove("use-mode");
+  } else {
+    modeToggleBtn.textContent = "Switch to Editor Mode";
+    document.body.classList.add("use-mode");
+  }
+
+  rotateLeftBtn.disabled = !isEditorMode();
+  rotateRightBtn.disabled = !isEditorMode();
+  sizeDownBtn.disabled = !isEditorMode();
+  sizeUpBtn.disabled = !isEditorMode();
+  exportBtn.disabled = !isEditorMode();
+  resetBtn.disabled = !isEditorMode();
+  importFile.disabled = !isEditorMode();
+}
+
 function updateLivePanel() {
   if (selectedStand) {
     const aircraft = getAircraftByStand(selectedStand);
     selectedAircraft.textContent =
-      `Stand ${aircraft.stand} | x=${aircraft.x.toFixed(2)} | y=${aircraft.y.toFixed(2)} | rotation=${aircraft.rotation.toFixed(1)} | size=${aircraft.size.toFixed(2)}`;
+      `[${appMode.toUpperCase()}] Stand ${aircraft.stand} | x=${aircraft.x.toFixed(2)} | y=${aircraft.y.toFixed(2)} | rotation=${aircraft.rotation.toFixed(1)} | size=${aircraft.size.toFixed(2)}`;
   } else {
-    selectedAircraft.textContent = "None selected.";
+    selectedAircraft.textContent = `[${appMode.toUpperCase()}] None selected.`;
   }
 
   liveData.textContent = JSON.stringify(aircraftData, null, 2);
@@ -100,6 +134,12 @@ function renderAircraft() {
       e.stopPropagation();
 
       selectedStand = plane.stand;
+      updateLivePanel();
+
+      if (!isEditorMode()) {
+        return;
+      }
+      
       dragState = {
         stand: plane.stand,
         pointerId: e.pointerId
@@ -162,6 +202,7 @@ function renderAircraft() {
 }
 
 function changeRotation(delta) {
+  if (!isEditorMode()) return;
   if (!selectedStand) return;
   const aircraft = getAircraftByStand(selectedStand);
   aircraft.rotation = (aircraft.rotation + delta + 360) % 360;
@@ -169,6 +210,7 @@ function changeRotation(delta) {
 }
 
 function changeSize(delta) {
+  if (!isEditorMode()) return;
   if (!selectedStand) return;
   const aircraft = getAircraftByStand(selectedStand);
   aircraft.size = clamp(aircraft.size + delta, 2.0, 8.0);
@@ -196,16 +238,27 @@ sizeDownBtn.addEventListener("click", () => changeSize(-0.15));
 sizeUpBtn.addEventListener("click", () => changeSize(0.15));
 
 exportBtn.addEventListener("click", () => {
+  if (!isEditorMode()) return;
   downloadJson("aircraft-layout.json", aircraftData);
 });
 
+modeToggleBtn.addEventListener("click", () => {
+  appMode = appMode === "editor" ? "use" : "editor";
+  dragState = null;
+  document.body.classList.remove("dragging-aircraft");
+  updateModeUI();
+  renderAircraft();
+});
+
 resetBtn.addEventListener("click", () => {
+  if (!isEditorMode()) return;
   aircraftData = JSON.parse(JSON.stringify(initialAircraftData));
   selectedStand = null;
   renderAircraft();
 });
 
 importFile.addEventListener("change", async (e) => {
+  if (!isEditorMode()) return;
   const file = e.target.files[0];
   if (!file) return;
 
@@ -249,4 +302,5 @@ window.addEventListener("pointercancel", () => {
   document.body.classList.remove("dragging-aircraft");
 });
 
+updateModeUI();
 renderAircraft();
