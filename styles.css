@@ -31,7 +31,7 @@ body {
 .app-header p {
   margin: 0;
   color: #cbd5e1;
-  max-width: 720px;
+  max-width: 760px;
 }
 
 .toolbar {
@@ -50,6 +50,7 @@ body {
   border-radius: 10px;
   cursor: pointer;
   font-size: 14px;
+  transition: opacity 0.15s ease, background 0.15s ease, border-color 0.15s ease;
 }
 
 .toolbar button:hover,
@@ -57,27 +58,19 @@ body {
   background: #162235;
 }
 
-.mode-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: #0f172a;
-  color: #e5e7eb;
-}
-
-body.use-mode .aircraft {
-  cursor: pointer;
-}
-
-body.use-mode .toolbar .editor-only {
+.toolbar button:disabled {
   opacity: 0.45;
+  cursor: not-allowed;
 }
 
 #import-file {
   display: none;
+}
+
+.import-label.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .board-wrap {
@@ -86,6 +79,8 @@ body.use-mode .toolbar .editor-only {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 16px;
   padding: 12px;
+  -webkit-overflow-scrolling: auto;
+  overscroll-behavior: contain;
 }
 
 .apron-board {
@@ -94,6 +89,7 @@ body.use-mode .toolbar .editor-only {
   max-width: 1750px;
   margin: 0 auto;
   user-select: none;
+  touch-action: none;
 }
 
 .apron-map {
@@ -108,41 +104,6 @@ body.use-mode .toolbar .editor-only {
 .aircraft-layer {
   position: absolute;
   inset: 0;
-}
-
-.aircraft {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  border: none;
-  background: transparent;
-  padding: 0;
-  cursor: grab;
-  aspect-ratio: 1 / 1;
-}
-
-.board-wrap {
-  overflow: auto;
-  background: #07101d;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-  padding: 12px;
-
-  -webkit-overflow-scrolling: auto;
-  overscroll-behavior: contain;
-}
-
-.apron-board {
-  position: relative;
-  width: 100%;
-  max-width: 1750px;
-  margin: 0 auto;
-  user-select: none;
-  touch-action: none;
-}
-
-.aircraft-layer {
-  position: absolute;
-  inset: 0;
   touch-action: none;
 }
 
@@ -154,11 +115,6 @@ body.use-mode .toolbar .editor-only {
   padding: 0;
   cursor: grab;
   aspect-ratio: 1 / 1;
-  touch-action: none;
-}
-
-body.dragging-aircraft {
-  overflow: hidden;
   touch-action: none;
 }
 
@@ -166,30 +122,43 @@ body.dragging-aircraft {
   cursor: grabbing;
 }
 
-.aircraft svg {
+.aircraft img {
   width: 100%;
   height: 100%;
   display: block;
-  fill: rgba(0, 0, 0, 0.92);
-  transition: fill 0.15s ease, filter 0.15s ease;
   pointer-events: none;
+  user-select: none;
+  transition: filter 0.15s ease, opacity 0.15s ease;
 }
 
-.aircraft:hover svg,
-.aircraft:focus-visible svg {
-  fill: #031b17;
+.aircraft:hover img,
+.aircraft:focus-visible img {
   filter:
+    brightness(0.8)
     drop-shadow(0 0 7px rgba(74, 222, 128, 0.95))
     drop-shadow(0 0 16px rgba(74, 222, 128, 0.65))
     drop-shadow(0 0 28px rgba(74, 222, 128, 0.35));
 }
 
-.aircraft.selected svg {
-  fill: #052e24;
+.aircraft.selected img {
   filter:
+    brightness(0.7)
     drop-shadow(0 0 7px rgba(34, 197, 94, 1))
     drop-shadow(0 0 16px rgba(34, 197, 94, 0.8))
     drop-shadow(0 0 28px rgba(34, 197, 94, 0.45));
+}
+
+body.dragging-aircraft {
+  overflow: hidden;
+  touch-action: none;
+}
+
+body.use-mode .aircraft {
+  cursor: pointer;
+}
+
+body.use-mode .live-data {
+  display: none;
 }
 
 .legend {
