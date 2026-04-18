@@ -41,7 +41,12 @@ let dragState = null;
 
 function aircraftSvg(rotation) {
   return `
-    <img src="./plane.svg" alt="" style="width:100%; height:100%; transform: rotate(${rotation}deg); pointer-events:none;" />
+    <img
+      src="./plane.svg"
+      alt=""
+      draggable="false"
+      style="width:100%; height:100%; transform: rotate(${rotation}deg); pointer-events:none; user-select:none;"
+    />
   `;
 }
 
