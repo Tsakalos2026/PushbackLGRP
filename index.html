@@ -11,18 +11,22 @@
     <header class="app-header">
       <div>
         <h1>Rhodes Apron Pushback Layout Editor</h1>
-        <p>Drag aircraft to position them. Use the rotate buttons to change heading. Export the layout as JSON.</p>
+        <p id="mode-description">
+          Editor Mode: drag aircraft, rotate, resize, import, export, and reset.
+        </p>
       </div>
 
       <div class="toolbar">
         <button id="mode-toggle-btn" type="button">Switch to Use Mode</button>
-        <button id="rotate-left-btn" type="button">Rotate Left</button>
-        <button id="rotate-right-btn" type="button">Rotate Right</button>
-        <button id="size-down-btn" type="button">Smaller</button>
-        <button id="size-up-btn" type="button">Larger</button>
-        <button id="export-btn" type="button">Export JSON</button>
-        <button id="reset-btn" type="button">Reset</button>
-        <label class="import-label" for="import-file">Import JSON</label>
+
+        <button id="rotate-left-btn" class="editor-only" type="button">Rotate Left</button>
+        <button id="rotate-right-btn" class="editor-only" type="button">Rotate Right</button>
+        <button id="size-down-btn" class="editor-only" type="button">Smaller</button>
+        <button id="size-up-btn" class="editor-only" type="button">Larger</button>
+        <button id="export-btn" class="editor-only" type="button">Export JSON</button>
+        <button id="reset-btn" class="editor-only" type="button">Reset</button>
+
+        <label id="import-label" class="import-label editor-only" for="import-file">Import JSON</label>
         <input id="import-file" type="file" accept=".json" />
       </div>
     </header>
@@ -42,7 +46,7 @@
 
     <section class="legend">
       <h2>Selected aircraft</h2>
-      <div id="selected-aircraft" class="selected-aircraft">None selected.</div>
+      <div id="selected-aircraft" class="selected-aircraft">[EDITOR] None selected.</div>
       <pre id="live-data" class="live-data"></pre>
     </section>
   </div>
