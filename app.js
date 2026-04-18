@@ -41,48 +41,7 @@ let dragState = null;
 
 function aircraftSvg(rotation) {
   return `
-    <svg viewBox="0 0 100 100" aria-hidden="true" style="transform: rotate(${rotation}deg)">
-      <path d="
-        M50 5
-        C54 5, 56 8, 56 13
-        L56 30
-
-        L79 41
-        C82 42, 84 44, 84 47
-        L84 50
-        L66 47
-        L66 54
-        L70 55
-        L70 62
-        L64 61
-        L56 58
-
-        L56 79
-        L64 86
-        L64 91
-        L52 88
-        L50 99
-        L48 88
-        L36 91
-        L36 86
-        L44 79
-
-        L44 58
-        L36 61
-        L30 62
-        L30 55
-        L34 54
-        L34 47
-        L16 50
-        L16 47
-        C16 44, 18 42, 21 41
-        L44 30
-
-        L44 13
-        C44 8, 46 5, 50 5
-        Z
-      "></path>
-    </svg>
+    <img src="./plane.svg" alt="" style="width:100%; height:100%; transform: rotate(${rotation}deg); pointer-events:none;" />
   `;
 }
 
