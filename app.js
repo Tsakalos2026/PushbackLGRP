@@ -2,6 +2,7 @@ const board = document.getElementById("apron-board");
 const aircraftLayer = document.getElementById("aircraft-layer");
 const selectedAircraft = document.getElementById("selected-aircraft");
 const liveData = document.getElementById("live-data");
+const modeDescription = document.getElementById("mode-description");
 
 const modeToggleBtn = document.getElementById("mode-toggle-btn");
 const rotateLeftBtn = document.getElementById("rotate-left-btn");
@@ -10,6 +11,7 @@ const sizeDownBtn = document.getElementById("size-down-btn");
 const sizeUpBtn = document.getElementById("size-up-btn");
 const exportBtn = document.getElementById("export-btn");
 const resetBtn = document.getElementById("reset-btn");
+const importLabel = document.getElementById("import-label");
 const importFile = document.getElementById("import-file");
 
 const initialAircraftData = [
@@ -65,31 +67,27 @@ function isEditorMode() {
 }
 
 function updateModeUI() {
-  const editorControls = [
-    rotateLeftBtn,
-    rotateRightBtn,
-    sizeDownBtn,
-    sizeUpBtn,
-    exportBtn,
-    resetBtn,
-    importFile
-  ];
+  const editorEnabled = isEditorMode();
 
-  if (isEditorMode()) {
-    modeToggleBtn.textContent = "Switch to Use Mode";
-    document.body.classList.remove("use-mode");
-  } else {
-    modeToggleBtn.textContent = "Switch to Editor Mode";
-    document.body.classList.add("use-mode");
-  }
+  modeToggleBtn.textContent = editorEnabled
+    ? "Switch to Use Mode"
+    : "Switch to Editor Mode";
 
-  rotateLeftBtn.disabled = !isEditorMode();
-  rotateRightBtn.disabled = !isEditorMode();
-  sizeDownBtn.disabled = !isEditorMode();
-  sizeUpBtn.disabled = !isEditorMode();
-  exportBtn.disabled = !isEditorMode();
-  resetBtn.disabled = !isEditorMode();
-  importFile.disabled = !isEditorMode();
+  modeDescription.textContent = editorEnabled
+    ? "Editor Mode: drag aircraft, rotate, resize, import, export, and reset."
+    : "Use Mode: aircraft are selectable but locked in place.";
+
+  document.body.classList.toggle("use-mode", !editorEnabled);
+
+  rotateLeftBtn.disabled = !editorEnabled;
+  rotateRightBtn.disabled = !editorEnabled;
+  sizeDownBtn.disabled = !editorEnabled;
+  sizeUpBtn.disabled = !editorEnabled;
+  exportBtn.disabled = !editorEnabled;
+  resetBtn.disabled = !editorEnabled;
+  importFile.disabled = !editorEnabled;
+
+  importLabel.classList.toggle("disabled", !editorEnabled);
 }
 
 function updateLivePanel() {
@@ -110,10 +108,6 @@ function renderAircraft() {
   aircraftData.forEach((plane) => {
     const button = document.createElement("button");
     button.className = "aircraft";
-    if (plane.stand === selectedStand) {
-      button.classList.add("selected");
-    }
-
     button.type = "button";
     button.dataset.stand = plane.stand;
     button.setAttribute("aria-label", `Aircraft at stand ${plane.stand}`);
@@ -122,11 +116,14 @@ function renderAircraft() {
     button.style.width = `${plane.size}%`;
     button.innerHTML = aircraftSvg(plane.rotation);
 
+    if (plane.stand === selectedStand) {
+      button.classList.add("selected");
+    }
+
     button.addEventListener("click", (e) => {
       e.stopPropagation();
       selectedStand = plane.stand;
       renderAircraft();
-      updateLivePanel();
     });
 
     button.addEventListener("pointerdown", (e) => {
@@ -139,7 +136,7 @@ function renderAircraft() {
       if (!isEditorMode()) {
         return;
       }
-      
+
       dragState = {
         stand: plane.stand,
         pointerId: e.pointerId
@@ -151,11 +148,10 @@ function renderAircraft() {
       try {
         button.setPointerCapture(e.pointerId);
       } catch (_) {}
-
-      updateLivePanel();
     });
 
     button.addEventListener("pointermove", (e) => {
+      if (!isEditorMode()) return;
       if (!dragState || dragState.stand !== plane.stand) return;
 
       e.preventDefault();
@@ -175,23 +171,29 @@ function renderAircraft() {
 
     button.addEventListener("pointerup", (e) => {
       if (!dragState || dragState.stand !== plane.stand) return;
+
       dragState = null;
       button.classList.remove("dragging");
       document.body.classList.remove("dragging-aircraft");
+
       try {
         button.releasePointerCapture(e.pointerId);
       } catch (_) {}
+
       renderAircraft();
     });
 
     button.addEventListener("pointercancel", (e) => {
       if (!dragState || dragState.stand !== plane.stand) return;
+
       dragState = null;
       button.classList.remove("dragging");
       document.body.classList.remove("dragging-aircraft");
+
       try {
         button.releasePointerCapture(e.pointerId);
       } catch (_) {}
+
       renderAircraft();
     });
 
@@ -204,6 +206,7 @@ function renderAircraft() {
 function changeRotation(delta) {
   if (!isEditorMode()) return;
   if (!selectedStand) return;
+
   const aircraft = getAircraftByStand(selectedStand);
   aircraft.rotation = (aircraft.rotation + delta + 360) % 360;
   renderAircraft();
@@ -212,6 +215,7 @@ function changeRotation(delta) {
 function changeSize(delta) {
   if (!isEditorMode()) return;
   if (!selectedStand) return;
+
   const aircraft = getAircraftByStand(selectedStand);
   aircraft.size = clamp(aircraft.size + delta, 2.0, 8.0);
   renderAircraft();
@@ -243,7 +247,7 @@ exportBtn.addEventListener("click", () => {
 });
 
 modeToggleBtn.addEventListener("click", () => {
-  appMode = appMode === "editor" ? "use" : "editor";
+  appMode = isEditorMode() ? "use" : "editor";
   dragState = null;
   document.body.classList.remove("dragging-aircraft");
   updateModeUI();
@@ -252,6 +256,7 @@ modeToggleBtn.addEventListener("click", () => {
 
 resetBtn.addEventListener("click", () => {
   if (!isEditorMode()) return;
+
   aircraftData = JSON.parse(JSON.stringify(initialAircraftData));
   selectedStand = null;
   renderAircraft();
@@ -259,6 +264,7 @@ resetBtn.addEventListener("click", () => {
 
 importFile.addEventListener("change", async (e) => {
   if (!isEditorMode()) return;
+
   const file = e.target.files[0];
   if (!file) return;
 
@@ -271,7 +277,7 @@ importFile.addEventListener("change", async (e) => {
     }
 
     aircraftData = parsed.map((item) => ({
-      stand: item.stand,
+      stand: String(item.stand),
       x: Number(item.x),
       y: Number(item.y),
       rotation: Number(item.rotation),
